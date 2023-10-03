@@ -1,0 +1,117 @@
+.root {
+    -fx-background-image: url("background_photo.jpg");
+    -fx-background-size: cover;
+}
+
+.welcomeRoot {
+    -fx-background-image: url("background_photo.jpg");
+    -fx-background-size: cover;
+}
+
+
+.popup-background {
+    -fx-background-image: url('background_photo.jpg');
+    -fx-background-size: cover;
+    -fx-background-repeat: no-repeat;
+}
+
+.main-button {
+    -fx-font-size: 16px;
+    -fx-background-color: #582ba1;
+    -fx-text-fill: white;
+    -fx-padding: 20px 60px;
+    -fx-background-radius: 18px;
+    -fx-alignment: center;
+    -fx-min-width: 190px;
+}
+
+.record-perc-button {
+    -fx-font-size: 11px;
+    -fx-background-color: #36383b;
+    -fx-text-fill: white;
+    -fx-padding: 20px 20px;
+    -fx-background-radius: 18px;
+    -fx-alignment: center;
+    -fx-min-width: 150px;
+    -fx-min-height: 40px;
+}
+
+.status-text {
+    -fx-font-size: 16px;
+    -fx-text-fill: black;
+}
+
+.game-button:hover {
+    -fx-background-color: #333333;
+}
+
+/* Clicked effect for buttons */
+.game-button:pressed {
+    -fx-background-color: #222222;
+}
+
+.game-button {
+    -fx-font-size: 16px;
+    -fx-background-color: #BAA1D5;
+    -fx-text-fill: white;
+    -fx-padding: 10px 50px;
+    -fx-background-radius: 18px;
+    -fx-alignment: center;
+    -fx-min-width: 170px;
+
+}
+
+.game-button-clicked {
+    -fx-background-color: #333333;
+}
+
+.cell-button {
+    -fx-background-color: #333333; /* Dark grey background color */
+    -fx-text-fill: white; /* White text color */
+    -fx-font-size: 14px; /* Font size */
+    -fx-font-weight: bold; /* Bold text */
+    -fx-border-color: #444444; /* Cell border color */
+    -fx-border-width: 1px; /* Cell border width */
+    -fx-border-radius: 0; /* Remove border radius */
+    -fx-padding: 0px; /* Add padding to the cell */
+}
+
+/* Style for flagged cells (red flag image) */
+.cell-button.flagged {
+    -fx-background-color: #333333; /* Dark grey background color */
+    -fx-text-fill: white; /* White text color */
+    -fx-font-size: 14px; /* Font size */
+    -fx-font-weight: bold; /* Bold text */
+    -fx-border-color: #444444; /* Cell border color */
+    -fx-border-width: 1px; /* Cell border width */
+    -fx-border-radius: 0; /* Remove border radius */
+    -fx-padding: 5px; /* Add padding to the cell */
+    -fx-background-image: url('red-flag.png'); /* Set the flag image as the background */
+    -fx-background-repeat: no-repeat; /* Prevent image repeat */
+    -fx-background-size: 100% 100%; /* Stretch the image to fill the cell */
+}
+
+/*
+
+.toggle-button {
+    -fx-background-color: #c0c0c0, #00ff00;
+    -fx-background-insets: 0, 1;
+    -fx-background-radius: 50;
+    -fx-padding: 2;
+    -fx-alignment: center;
+    -fx-content-display: graphic-only;
+    -fx-graphic: url('red-flag.png');
+}
+
+.toggle-button:selected {
+    -fx-background-color: #c0c0c0, #ff0000;
+}
+
+.toggle-button .graphic {
+    -fx-scale-x: 0.5;
+    -fx-scale-y: 0.5;
+}
+
+ */
+
+
