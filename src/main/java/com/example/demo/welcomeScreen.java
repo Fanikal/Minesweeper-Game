@@ -1,5 +1,6 @@
 package com.example.demo;
 
+import javafx.animation.FadeTransition;
 import javafx.application.Application;
 import javafx.geometry.Insets;
 import javafx.geometry.Orientation;
@@ -12,7 +13,7 @@ import javafx.scene.layout.VBox;
 import javafx.scene.text.Font;
 import javafx.scene.text.Text;
 import javafx.stage.Stage;
-
+import javafx.util.Duration;
 import java.util.Objects;
 
 public class welcomeScreen extends Application {
@@ -27,20 +28,20 @@ public class welcomeScreen extends Application {
             // Definition of the stage
             welcomeStage.setTitle("Minesweeper");
 
-            // Definition of the root pane which will contains all the other elements
+            // Definition of the root pane which will contain all the other elements
             FlowPane welcomeRoot = new FlowPane(Orientation.VERTICAL);
             welcomeRoot.setAlignment(Pos.CENTER);
             welcomeRoot.getStyleClass().add("welcomeRoot");
 
             // We set the height of the stage
             welcomeStage.setHeight(600);
-            welcomeStage.setWidth(800);
+            welcomeStage.setWidth(600);
 
             // Creation of the scene that contains root as a root pane
-            Scene scene = new Scene(welcomeRoot, 800, 600);
+            Scene scene = new Scene(welcomeRoot, 600, 600);
 
             // Load the custom font (GILSANUB)
-            Font.loadFont("C:\\WINDOWS\\FONTS\\GILSANUB.TTF", 36);
+            Font.loadFont("C:\\WINDOWS\\FONTS\\GILSANUB.TTF", 35);
 
             // VBox for the title
             VBox titlePane = new VBox();
@@ -50,8 +51,8 @@ public class welcomeScreen extends Application {
 
             // Title text with the custom font
             Text titleText = new Text("Fani's Minesweeper");
-            titleText.setFont(Font.font("Gill Sans Ultra Bold", 35)); // Use the custom font
-            titleText.setStyle("-fx-font-weight: bold; -fx-text-fill: #302c2c;");
+            titleText.setFont(Font.font("Gill Sans Ultra Bold", 35));
+            titleText.setStyle("-fx-font-weight: bold; -fx-fill: black;");
 
             // Add the text to the title VBox
             titlePane.getChildren().addAll(titleText);
@@ -66,31 +67,43 @@ public class welcomeScreen extends Application {
             HBox paneForButtons = new HBox();
             paneForButtons.setAlignment(Pos.CENTER);
             paneForButtons.setSpacing(10);
+            paneForButtons.setPadding(new Insets(10));
 
-            // Create button for "Let's go"
-            Button letsstartButton = new Button("Let's go");
+            // button for "Let's go"
+            Button letsstartButton = new Button("Go");
 
-            // Set style of "Let's go" button
+            // Setting style of "Let's go" button
             letsstartButton.setPrefWidth(160);
             letsstartButton.getStyleClass().add("main-button");
 
-            // Add button to paneForButtons
+            // Adding button to paneForButtons
             paneForButtons.getChildren().add(letsstartButton);
 
-            //Add pane to root
+            //Adding pane to root
             welcomeRoot.getChildren().add(paneForButtons);
 
-            // Handle event: click on start button
+            // Handle event: click on "Let's go" button
             letsstartButton.setOnMouseClicked(e ->{
-                //Open the Difficulty screen
-                difficultyScreen difficultyScreen = new difficultyScreen();
-                try {
-                    difficultyScreen.start(new Stage());
-                } catch (Exception ex) {
-                    throw new RuntimeException(ex);
-                }
-                // Close the welcome screen
-                welcomeStage.close();
+                // Creating the difficulty screen
+                HowItWorksScreen howItWorks = new HowItWorksScreen();
+
+                // Applying fade-out transition to the welcome screen
+                FadeTransition fadeOut = new FadeTransition(Duration.seconds(1), welcomeRoot);
+                fadeOut.setFromValue(1.0);
+                fadeOut.setToValue(0.0);
+                fadeOut.setOnFinished(event -> {
+                    // Open the difficulty screen
+                    try {
+                        howItWorks.start(new Stage());
+                    } catch (Exception ex) {
+                        throw new RuntimeException(ex);
+                    }
+                    // Close the welcome screen
+                    welcomeStage.close();
+                });
+
+                // Play the fade-out transition
+                fadeOut.play();
             });
 
             // We display the scene we just created in the stage

@@ -1,210 +1,179 @@
 package com.example.demo;
 
+import javafx.animation.FadeTransition;
 import javafx.application.Application;
 import javafx.geometry.Insets;
 import javafx.geometry.Orientation;
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
-import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
+import javafx.scene.control.Label;
 import javafx.scene.control.Tooltip;
+import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
+import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.FlowPane;
 import javafx.scene.layout.VBox;
 import javafx.scene.text.Font;
 import javafx.scene.text.Text;
-import javafx.scene.text.TextAlignment;
 import javafx.stage.Stage;
+import javafx.util.Duration;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Objects;
 
 public class difficultyScreen extends Application {
 
+    private List<swipeImage> images = new ArrayList<swipeImage>();
+    private int currentImageIndex = 0;
+    private ImageView displayImageView = new ImageView();
     private Stage primaryStage;
-    private Button easyButton;
-    private Button mediumButton;
-    private Button hardButton;
-    private Button startButton;
+    private double initialX;
 
-    public static void main(String[] args)
-    {
-        //Launch of the application
+    public static void main(String[] args) {
+        // Launch of the application
         launch(args);
     }
 
     @Override
     public void start(Stage primaryStage) throws Exception {
-
         this.primaryStage = primaryStage;
+
+        // Title of the stage
+        primaryStage.setTitle("Minesweeper");
 
         // Definition of the root pane which will contain all the other elements
         FlowPane root = new FlowPane(Orientation.VERTICAL);
         root.setAlignment(Pos.CENTER);
 
-        //Creation of the scene that contains root as a root pane
+        // Creation of the scene that contains root as a root pane
         Scene scene = new Scene(root, 800, 600);
 
-        //Title of the stage
-        primaryStage.setTitle("Minesweeper");
+        // Set the height and width of the stage
+        primaryStage.setHeight(600);
+        primaryStage.setWidth(800);
+
+        // Initialize images & add them to list
+        images.add(new swipeImage("easy", "/com/example/demo/easy.png", "Easy: 8x8 grid, 8 mines, 2 minutes"));
+        images.add(new swipeImage("medium", "/com/example/demo/medium.png", "Medium. 10x10 grid, 15 mines, 5 minutes"));
+        images.add(new swipeImage("hard", "/com/example/demo/hard.png", "Hard. 12x12 grid, 20 mines, 2 minutes"));
+
+        // Set up the initial level (planet) image
+        displayImage(currentImageIndex);
+
+        // keep track of the swiping movements
+        displayImageView.addEventFilter(MouseEvent.MOUSE_PRESSED, event -> {
+            initialX = event.getSceneX();
+            event.consume();
+        });
+
+        displayImageView.addEventFilter(MouseEvent.MOUSE_RELEASED, event -> {
+            double deltaX = event.getSceneX() - initialX;
+            if (deltaX > 50 && currentImageIndex > 0) {
+                // Right swipe
+                currentImageIndex--;
+            } else if (deltaX < -50 && currentImageIndex < images.size() - 1) {
+                // Left swipe
+                currentImageIndex++;
+            }
+
+            // update of the displayed character
+            displayImage(currentImageIndex);
+            event.consume();
+        });
+
+        // VBox for the title
+        VBox titlePane = new VBox();
+        titlePane.setPadding(new Insets(0, 0, 0, 0));
+        titlePane.setAlignment(Pos.CENTER);
 
         // Load the custom font (GILSANUB)
-        Font.loadFont("C:\\WINDOWS\\FONTS\\GILSANUB.TTF", 36);
+        Font.loadFont("C:\\WINDOWS\\FONTS\\GILSANUB.TTF", 35);
 
-        //We set the height of the stage
-        primaryStage.setHeight(600);
-        //primaryStage.setMaxHeight(600);
-        //primaryStage.setMinHeight(500);
-        //We set the width of the stage
-        primaryStage.setWidth(800);
-        //primaryStage.setMaxWidth(800);
-        //primaryStage.setMinWidth(700);
+        // VBox for the title "Select level"
+        Text titleLabel = new Text("Select level");
+        titleLabel.setFont(Font.font("Gill Sans Ultra Bold", 35));
+        titleLabel.setStyle("-fx-font-weight: bold; -fx-fill: black;");
+        titlePane.getChildren().add(titleLabel);
+
+        // VBox that contains the label and button under the image
+        VBox labelAndButtonBox = new VBox(10);
+        labelAndButtonBox.setAlignment(Pos.CENTER);
+
+        // label for "Swipe to select level"
+        Label underLabel = new Label("Swipe to select level");
+        underLabel.setStyle("-fx-font-size: 17px; -fx-text-fill: black; -fx-font-style: italic;");
+        underLabel.setPadding(new Insets(0, 0, 20, 0));
+
+        // button for "Let's go"
+        Button letsstartButton = new Button("Let's go");
+        letsstartButton.setStyle("-fx-font-size: 18px;");
+        letsstartButton.getStyleClass().add("main-button");
+
+        // add label and button to the VBox
+        labelAndButtonBox.getChildren().addAll(underLabel, letsstartButton);
+
+        // handle click on "Let's go" button
+        letsstartButton.setOnAction(e -> {
+            //retrieve the level of maze that should open in the next screen
+            String selectedDifficulty = images.get(currentImageIndex).getDifficulty();
+            // create the MineSweeperGame screen with the selected difficulty
+            gameScreen game = new gameScreen(selectedDifficulty);
+
+            // Apply fade-out transition to the difficulty screen
+            FadeTransition fadeOut = new FadeTransition(Duration.seconds(1), root);
+            fadeOut.setFromValue(1.0);
+            fadeOut.setToValue(0.0);
+            fadeOut.setOnFinished(event -> {
+                // Open the MineSweeperGame screen
+                try {
+                    game.start(new Stage());
+                } catch (Exception ex) {
+                    throw new RuntimeException(ex);
+                }
+                // Close the difficulty screen
+                primaryStage.close();
+            });
+
+            // Play the fade-out transition
+            fadeOut.play();
+        });
+
+        // VBox that contains the planet image and the label/button VBox
+        VBox planetBox = new VBox(0);
+        planetBox.setAlignment(Pos.CENTER);
+        planetBox.getChildren().addAll(displayImageView, labelAndButtonBox);
+        root.getChildren().addAll(titlePane, planetBox);
 
         // We display the scene we just created in the stage
         primaryStage.setScene(scene);
 
-        // We display the stage
+        // Center the VBox containing the button
+        root.setAlignment(Pos.CENTER);
+
+        //We show the stage
         primaryStage.show();
 
-        // We initialize the User Interface (UI) of the application
-        initGUI(root);
-
         // CSS styles
-        scene.getStylesheets().add
-                (difficultyScreen.class.getResource("mycss.css").toExternalForm());
+        scene.getStylesheets().add(difficultyScreen.class.getResource("mycss.css").toExternalForm());
+    }
 
+    // method that handles the display of each image (planet)
+    private void displayImage(int currentImageIndex) {
+        if (currentImageIndex >= 0 && currentImageIndex < images.size()) {
+            // show the correct image
+            swipeImage currImage = images.get(currentImageIndex);
+            String imageUrl = currImage.getImageUrl();
+            Image image = new Image(Objects.requireNonNull(difficultyScreen.class.getResourceAsStream(imageUrl)));
+            displayImageView.setFitHeight(200);
+            displayImageView.setPreserveRatio(true);
+            displayImageView.setImage(image);
+
+            // Set tooltip on hover
+            Tooltip tooltip = new Tooltip(currImage.getTooltipMessage());
+            Tooltip.install(displayImageView, tooltip);
+        }
 
     }
 
-    private void initGUI(FlowPane root) {
-
-        //VBox for the title
-        VBox titlePane = new VBox();
-        titlePane.setPadding(new Insets(21, 10, 10, 10));
-        titlePane.setAlignment(Pos.CENTER);
-        //titlePane.setMinHeight(75);
-        //titlePane.setMinWidth(175);
-        root.getChildren().add(titlePane);
-
-        //VBox for the difficulty levels
-        VBox levels = new VBox();
-        levels.setPadding(new Insets(10, 10, 10, 10));
-        levels.setMinHeight(75);
-        levels.setMinWidth(175);
-        root.getChildren().add(levels);
-
-        //Define buttons for difficulty
-        easyButton = new Button("Easy");
-        mediumButton = new Button("Medium");
-        hardButton = new Button("Hard");
-        startButton = new Button("Start Game");
-
-        //Vbox for the Start Game button
-        VBox startPane = new VBox();
-        startPane.setPadding(new Insets(10, 10, 5, 10));
-        startPane.setMinHeight(75);
-        startPane.setMinWidth(175);
-        root.getChildren().add(startPane);
-        // Define the style of the start button
-        startButton.getStyleClass().add("main-button");
-
-        // Create tooltips for the difficulty buttons
-        Tooltip easyTooltip = new Tooltip("Easy: 8x8 grid, 8 mines, 2 minutes");
-        Tooltip mediumTooltip = new Tooltip("Medium: 10x10 grid, 10 mines, 5 minutes");
-        Tooltip hardTooltip = new Tooltip("Hard: 11x11 grid, 15 mines, 5 minutes");
-
-        // Set the tooltips on the buttons
-        easyButton.setTooltip(easyTooltip);
-        mediumButton.setTooltip(mediumTooltip);
-        hardButton.setTooltip(hardTooltip);
-
-        // Define width, css id of buttons
-        easyButton.setPrefWidth(170);
-        mediumButton.setPrefWidth(170);
-        hardButton.setPrefWidth(170);
-        easyButton.getStyleClass().add("game-button");
-        mediumButton.getStyleClass().add("game-button");
-        hardButton.getStyleClass().add("game-button");
-
-        //add the difficulty levels to the levels Vbox
-        levels.setAlignment(Pos.CENTER);
-        startPane.setAlignment(Pos.CENTER);
-        levels.setSpacing(10);
-        levels.getChildren().addAll(easyButton, mediumButton, hardButton);
-
-        //add start button to startPane
-        startPane.getChildren().add(startButton);
-
-        //Define title of scene
-        Text mainTitle = new Text("Select Difficulty");
-        mainTitle.setFont(Font.font("Gill Sans Ultra Bold", 32)); // Use the custom font
-        mainTitle.setStyle("-fx-fill: black");
-        mainTitle.setTextAlignment(TextAlignment.CENTER);
-        titlePane.getChildren().add(mainTitle);
-
-        // When user clicks on a difficulty button: setOnAction events
-        easyButton.setOnAction(event -> handleDifficultySelection(easyButton));
-        mediumButton.setOnAction(event -> handleDifficultySelection(mediumButton));
-        hardButton.setOnAction(event -> handleDifficultySelection(hardButton));
-
-        // When user clicks on start button: open the game
-        startButton.setOnMouseClicked(e -> openMineSweeperGame());
-
-    }
-
-    private void handleDifficultySelection(Button button) {
-        // Remove ´game-button-clicked´ id from all buttons
-        if (easyButton != null) {
-            easyButton.getStyleClass().remove("game-button-clicked");
-        }
-        if (mediumButton != null) {
-            mediumButton.getStyleClass().remove("game-button-clicked");
-        }
-        if (hardButton != null) {
-            hardButton.getStyleClass().remove("game-button-clicked");
-        }
-
-        // Apply the "clicked" style to the current button
-        if (button != null) {
-            button.getStyleClass().add("game-button-clicked");
-        }
-
-        // Update the selected button
-        if (button == easyButton) {
-            easyButton = button;
-        } else if (button == mediumButton) {
-            mediumButton = button;
-        } else if (button == hardButton) {
-            hardButton = button;
-        }
-    }
-
-    private void openMineSweeperGame() {
-        String difficulty = "Easy";
-
-        if (easyButton != null && easyButton.getStyleClass().contains("game-button-clicked")) {
-            difficulty = "Easy";
-        } else if (mediumButton != null && mediumButton.getStyleClass().contains("game-button-clicked")) {
-            difficulty = "Medium";
-        } else if (hardButton != null && hardButton.getStyleClass().contains("game-button-clicked")) {
-            difficulty = "Hard";
-        } else {
-            // If the user hasn't selected a difficulty, display a popup
-            showDifficultySelectionAlert();
-            return; 
-        }
-
-        //open the game
-        MineSweeperGame mineSweeperGame = new MineSweeperGame(difficulty);
-        mineSweeperGame.start(new Stage());
-        //close the current stage
-        primaryStage.close();
-    }
-
-    //method that handles the alert popup, in case the user hasn't selected a difficulty
-    private void showDifficultySelectionAlert() {
-        Alert alert = new Alert(Alert.AlertType.WARNING);
-        alert.setTitle("Difficulty Selection");
-        alert.setHeaderText("Please select a level of difficulty.");
-        alert.setContentText("You must choose a difficulty level before starting the game.");
-
-        alert.showAndWait();
-    }
 }
-
