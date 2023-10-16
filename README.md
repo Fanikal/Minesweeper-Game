@@ -1,6 +1,6 @@
 # Minesweeper Game README
 
-Welcome to the Minesweeper Game developed with IntelliJ IDEA 2023.2.1. This README provides instructions on how to run the application and offers an overview of its features and functionalities.
+Welcome to the Minesweeper Game developed with IntelliJ IDEA 2023.2.1. This project is an interactive Minesweeper game created as part of the "Programming of Interactive System" course of the Université Paris-Saclay. 
 
 ## Table of Contents
 1. [Installation and Setup](#installation-and-setup)
