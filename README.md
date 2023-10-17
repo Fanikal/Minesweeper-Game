@@ -43,7 +43,6 @@ The Minesweeper Game boasts a range of functionalities to enhance the gaming exp
 
 ## Additional Information
 - The application leverages a custom CSS file (*mycss.css*) for styling.
-- External resources, including Stack Overflow and ChatGPT, were consulted for guidance in implementing certain features.
 
 ## UI Design and Color Palette
 The Minesweeper Game follows UI design guidelines and features a carefully chosen color palette for a visually appealing and harmonious user experience.
